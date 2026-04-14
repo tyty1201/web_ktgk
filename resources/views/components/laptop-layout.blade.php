@@ -1,3 +1,5 @@
+@props(['title' => 'Danh sách Laptop mới nhất'])
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
