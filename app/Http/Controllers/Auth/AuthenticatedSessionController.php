@@ -28,7 +28,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Sửa ở đây: Redirect về trang chủ thay vì dashboard
+        return redirect()->intended(route('home', absolute: false));
+        // Hoặc dùng cách đơn giản hơn:
+        // return redirect('/');
     }
 
     /**
