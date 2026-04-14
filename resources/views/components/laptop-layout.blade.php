@@ -1,3 +1,5 @@
+@props(['title' => 'Danh sách Laptop mới nhất'])
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -93,6 +95,31 @@
         .user-dropdown button {
             background-color: #28a745;
             border: none;
+        }
+
+        .list-laptop
+        {
+            display:grid;
+            grid-template-columns:repeat(5,20%);
+        }
+        .laptop
+        {
+            margin:10px;
+            text-align:center;
+            border-radius:5px;
+            border:1px solid #dbdbdb;
+            overflow: hidden;
+            cursor:pointer;
+        }
+        .laptop a
+        {
+            color: black;
+            text-decoration:none;
+        }
+        .laptop-info
+        {
+            display:grid;
+            grid-template-columns:repeat(2,30% 70%);
         }
     </style>
 </head>

@@ -1,44 +1,91 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\DB; 
 use Illuminate\Http\Request;
 use App\Models\Product;
 
 class HomeController extends Controller
 {
-    public function index()
+    //
+    public function index(){
+            $laptops = DB::table('san_pham')           
+                ->limit(20)
+                ->get();
+        
+                return view('laptop.index', compact('laptops'));
+    }   
+
+    public function category(Request $request, $id)
     {
-        return view("laptop.index");
+        $sort = $request->query('sort', 'asc'); 
+    
+        // Truy vấn: Lọc theo id_danh_muc, status=1 và sắp xếp theo giá
+        $laptops = DB::table('san_pham')
+            ->where('id_danh_muc', $id)
+            ->orderBy('gia', $sort) 
+            ->get();
+    
+        // Lấy tên thương hiệu để hiển thị (nếu cần)
+        $brand = DB::table('danh_muc_laptop')->where('id', $id)->first();
+    
+        return view('laptop.index', compact('laptops', 'id', 'sort'));
     }
+    
+        public function show($id)
+        {
+            $laptop = DB::table('san_pham')->where('id', $id)->first();
+    
+            if (!$laptop) {
+                abort(404);
+            }
+    
+            return view('laptop.show', compact('laptop'));       
+         }
 
-    /**
-     * Xử lý tìm kiếm laptop
-     */
-    public function search(Request $request)
-    {
-        $keyword = trim($request->get('keyword'));
+         public function search(Request $request)
+         {
+             $keyword = $request->input('keyword');
+         
+             // Dùng đúng câu lệnh gợi ý từ đề bài
+             $laptops = DB::select("select * from san_pham where tieu_de like ?", ["%".$keyword."%"]);
+         
+             return view('laptop.index', compact('laptops'));
+         }
 
-        // Nếu không nhập từ khóa thì quay lại trang chủ
-        if (empty($keyword)) {
-            return redirect()->back()->with('error', 'Vui lòng nhập từ khóa tìm kiếm!');
-        }
+         public function addToCart(Request $request, $id)
+         {
+             // Lấy giỏ hàng hiện tại từ session, nếu chưa có thì tạo mảng rỗng
+             $cart = session()->get('cart', []);
+         
+             // Tìm thông tin sản phẩm
+             $laptop = DB::table('san_pham')->where('id', $id)->first();
+         
+             if(!$laptop) {
+                 return redirect()->back()->with('error', 'Sản phẩm không tồn tại!');
+             }
+         
+             $quantity = $request->input('quantity', 1);
+         
+             // Nếu sản phẩm đã có trong giỏ, tăng số lượng
+             if(isset($cart[$id])) {
+                 $cart[$id]['quantity'] += $quantity;
+             } else {
+                 // Nếu chưa có, thêm mới vào mảng
+                 $cart[$id] = [
+                     "name" => $laptop->tieu_de,
+                     "quantity" => $quantity,
+                     "price" => $laptop->gia,
+                     "image" => $laptop->hinh_anh
+                 ];
+             }
+         
+             // Lưu lại vào session
+             session()->put('cart', $cart);
+         
+             return redirect()->back()->with('success', 'Đã thêm sản phẩm vào giỏ hàng!');
+         }
 
-        // Tìm kiếm trên nhiều trường
-        $products = Product::where(function ($query) use ($keyword) {
-            $query->where('ten', 'LIKE', "%{$keyword}%")
-                  ->orWhere('tieu_de', 'LIKE', "%{$keyword}%")
-                  ->orWhere('cpu', 'LIKE', "%{$keyword}%")
-                  ->orWhere('series_model', 'LIKE', "%{$keyword}%")
-                  ->orWhere('nhu_cau', 'LIKE', "%{$keyword}%")
-                  ->orWhere('mau_sac', 'LIKE', "%{$keyword}%")
-                  ->orWhere('chip_do_hoa', 'LIKE', "%{$keyword}%");
-        })
-        ->orderBy('gia', 'desc')        // Sắp xếp theo giá cao đến thấp
-        ->get();
-
-        $title = 'Kết quả tìm kiếm cho: "' . $keyword . '"';
-
-        return view('search', compact('products', 'keyword', 'title'));
-    }
 }
+
+
