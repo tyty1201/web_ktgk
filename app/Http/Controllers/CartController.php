@@ -8,18 +8,15 @@ use App\Models\Product;
 class CartController extends Controller
 {
     // Hiển thị giỏ hàng
+    // 1. SỬA LẠI HÀM NÀY
     public function index()
     {
-        $cart = session()->get('cart', []);
-        $total = 0;
-
-        foreach ($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
-        }
-
-        return view('cart.index', compact('cart', 'total'));
+        // Vì giỏ hàng đã nằm ở trang chủ, ta chuyển hướng về trang chủ
+        // Thêm '#phan-gio-hang' để trình duyệt tự động cuộn xuống phần giỏ hàng
+        return redirect('/#phan-gio-hang');
     }
 
+    
     // Thêm sản phẩm vào giỏ hàng
     public function add(Request $request, $id)
     {
@@ -45,7 +42,7 @@ class CartController extends Controller
     }
 
     // Xóa một sản phẩm khỏi giỏ hàng
-    public function remove($id)
+    public function delete($id)
     {
         $cart = session()->get('cart', []);
 
@@ -65,17 +62,15 @@ class CartController extends Controller
     }
 
     // ==================== XỬ LÝ ĐẶT HÀNG ====================
+    // 2. SỬA LẠI ĐƯỜNG DẪN TRONG HÀM CHECKOUT (Ở DƯỚI CÙNG)
     public function checkout(Request $request)
     {
         $cart = session()->get('cart', []);
 
         if (empty($cart)) {
-            return redirect()->route('cart.index')
-                             ->with('error', 'Giỏ hàng của bạn đang trống!');
+            // Sửa route('cart.index') thành redirect
+            return redirect('/#phan-gio-hang')->with('error', 'Giỏ hàng của bạn đang trống!');
         }
-
-        // TODO: Sau này sẽ lưu vào bảng orders và order_items
-        // Hiện tại chỉ giả lập đặt hàng thành công
 
         $total = 0;
         foreach ($cart as $item) {
@@ -85,9 +80,8 @@ class CartController extends Controller
         // Xóa giỏ hàng sau khi đặt hàng
         session()->forget('cart');
 
-        return redirect()->route('cart.index')
-                         ->with('success', '🎉 Đặt hàng thành công! 
-                         Tổng tiền: ' . number_format($total, 0, ',', '.') . ' đ. 
-                         Cảm ơn bạn đã mua hàng!');
+        // Sửa route('cart.index') thành redirect
+        return redirect('/#phan-gio-hang')
+                ->with('success', '🎉 Đặt hàng thành công! Tổng tiền: ' . number_format($total, 0, ',', '.') . ' đ. Cảm ơn bạn đã mua hàng!');
     }
 }
