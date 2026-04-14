@@ -22,6 +22,8 @@ Route::middleware('auth')->group(function () {
     })->name('account');
 });
 
+Route::get('/timkiem', [HomeController::class, 'search'])->name('search');
+
 // ==================== CART ROUTES ====================
 Route::prefix('cart')->name('cart.')->group(function () {
     Route::get('/', [CartController::class, 'index'])->name('index');
@@ -30,5 +32,6 @@ Route::prefix('cart')->name('cart.')->group(function () {
     Route::post('/clear', [CartController::class, 'clear'])->name('clear');
     Route::post('/checkout', [CartController::class, 'checkout'])->name('checkout');
 });
+
 
 require __DIR__.'/auth.php';
