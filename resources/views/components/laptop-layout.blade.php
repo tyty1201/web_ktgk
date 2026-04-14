@@ -13,14 +13,24 @@
     <script src="{{asset('library/popper.min.js')}}"></script>
     <script src="{{asset('library/bootstrap.bundle.min.js')}}"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="{{asset('library/jquery-3.7.1.js')}}"></script>
+    <script src="{{asset('library/jquery-3.7.1.js')}}" ></script>
+    <script src="https://cdn.datatables.net/2.0.3/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap4.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap4.css">
 
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            margin: 0; 
-            padding: 0; 
-            font-size: 14px; 
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            font-size: 14px;
+        
+        }
+
+        .container {
+            max-width: 1000px; /* Chiều rộng tối đa của nội dung */
+            margin: 0 auto; /* Căn giữa nội dung */
+            padding: 0 15px;
         }
 
         .navbar {
@@ -121,6 +131,31 @@
             display:grid;
             grid-template-columns:repeat(2,30% 70%);
         }
+
+        .list-laptop
+        {
+            display:grid;
+            grid-template-columns:repeat(5,20%);
+        }
+        .laptop
+        {
+            margin:10px;
+            text-align:center;
+            border-radius:5px;
+            border:1px solid #dbdbdb;
+            overflow: hidden;
+            cursor:pointer;
+        }
+        .laptop a
+        {
+            color: black;
+            text-decoration:none;
+        }
+        .laptop-info
+        {
+            display:grid;
+            grid-template-columns:repeat(2,30% 70%);
+        }
     </style>
 </head>
 <body>
@@ -163,32 +198,33 @@
                             </button>
                         </form>
                     </div>
-
-                    <!-- 3. Giỏ hàng + User -->
-                    <div class="col-3 d-flex align-items-center justify-content-end gap-3">
-                        
-                        <!-- Icon Giỏ hàng -->
-                        <a href="{{ route('cart.index') }}" class="cart-icon position-relative">
-                            <i class="fa fa-shopping-cart"></i>
-                            @if (session('cart') && count(session('cart')) > 0)
-                                <span class="cart-count">
-                                    {{ count(session('cart')) }}
-                                </span>
-                            @endif
+                    <div style='color:white;position:relative' class='mr-2'>
+                        <div style='width:20px; height:20px;background-color:#23b85c; font-size:12px; border:none;
+                             border-radius:50%; position:absolute;right:2px;top:-2px' id='cart-number-product'>
+                                @if (session('cart'))
+                                     {{ count(session('cart')) }}
+                                @else
+                                    0
+                                @endif
+                        </div>
+                        <a href="{{url('/gio-hang')}}" style='cursor:pointer;color:white;'>
+                            <i class="fa fa-cart-arrow-down fa-2x mr-2 mt-1" aria-hidden="true"></i>
                         </a>
+                    </div>
 
-                        <!-- User -->
+                    <div class='col-2 p-0 d-flex'>
                         @auth
                             <div class="dropdown user-dropdown">
                                 <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">
                                     {{ Auth::user()->name }}
                                 </button>
-                                <div class="dropdown-menu dropdown-menu-end">
-                                    <a class="dropdown-item" href="{{route('account')}}">Quản lý</a>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item">Đăng xuất</button>
-                                    </form>
+                                <div class="dropdown-menu">
+                                <a class="dropdown-item" href="">Quản lý</a>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <a class="dropdown-item" onclick="event.preventDefault();
+                                                        this.closest('form').submit();">Đăng xuất</a>
+                                </form>
                                 </div>
                             </div>
                         @else
@@ -202,9 +238,8 @@
             </nav>
         </div>
     </header>
-
-    <main>
-        @yield('content')     {{-- Đã sửa từ {{$slot}} thành @yield('content') --}}
+    <main class='container'>
+        {{$slot}}
     </main>
 </body>
 </html>
