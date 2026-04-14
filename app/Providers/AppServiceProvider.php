@@ -2,14 +2,13 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+// 1. Thêm 2 dòng này lên đầu file
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\DB;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         //
@@ -20,6 +19,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Schema::defaultStringLength(191);
+        // 2. Thêm đoạn này để chia sẻ biến $categories cho tất cả các file .blade.php
+        if (!app()->runningInConsole()) {
+            $categories = DB::table('danh_muc_laptop')->get();
+            View::share('categories', $categories);
+        }
     }
 }
