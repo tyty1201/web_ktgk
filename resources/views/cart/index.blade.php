@@ -1,4 +1,4 @@
-@extends('layouts.laptop-layout')
+@extends('components.laptop-layout')
 
 @section('title', 'Giỏ hàng')
 

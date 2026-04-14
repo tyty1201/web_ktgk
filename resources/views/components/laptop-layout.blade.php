@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{$title}}</title>
+    
+    <title>{{ $title ?? 'Laptop Store' }}</title>
+    
     <link rel="stylesheet" href="{{asset('library/bootstrap.min.css')}}">
     <script src="{{asset('library/jquery.slim.min.js')}}"></script>
     <script src="{{asset('library/popper.min.js')}}"></script>
@@ -12,7 +14,12 @@
     <script src="{{asset('library/jquery-3.7.1.js')}}"></script>
 
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; font-size: 14px; }
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            font-size: 14px; 
+        }
 
         .navbar {
             background-color: #122333;
@@ -100,13 +107,22 @@
                     <!-- 1. Các hãng laptop -->
                     <div class="col-5">
                         <ul class="navbar-nav">
-                            @foreach($categories as $category)
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{url('laptop/theloai/'.$category->id)}}">
-                                        {{$category->ten_danh_muc}}
-                                    </a>
-                                </li>
-                            @endforeach
+                            @if(isset($categories) && $categories->count() > 0)
+                                @foreach($categories as $category)
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{url('laptop/theloai/'.$category->id)}}">
+                                            {{$category->ten_danh_muc}}
+                                        </a>
+                                    </li>
+                                @endforeach
+                            @else
+                                <!-- Hiển thị mặc định khi chưa có categories -->
+                                <li class="nav-item"><a class="nav-link" href="#">Dell</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#">Lenovo</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#">HP</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#">Asus</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#">Acer</a></li>
+                            @endif
                         </ul>
                     </div>
 
@@ -161,7 +177,7 @@
     </header>
 
     <main>
-        {{$slot}}
+        @yield('content')     {{-- Đã sửa từ {{$slot}} thành @yield('content') --}}
     </main>
 </body>
 </html>
